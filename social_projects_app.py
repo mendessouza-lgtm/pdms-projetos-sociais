@@ -505,7 +505,7 @@ def page_promethee_v():
         ax.set_ylabel('Fluxos')
         ax.set_title('Fluxos PROMETHEE V C-ÓTIMO')
         ax.set_xticks(x)
-        ax.set_xticklabels(projects(projects, rotation=45)
+        ax.set_xticklabels(projects, rotation=45)
         ax.legend()
         ax.grid(True, alpha=0.3)
         st.pyplot(fig)
@@ -536,3 +536,4 @@ elif choice == "PROMETHEE V-C-ÓTIMO":
     page_promethee_v()
 
 st.caption("© PDMSPS (Processo de Decisão Multicritério para Seleção de Projetos Sociais) — Sistema de Apoio à Decisão")
+
