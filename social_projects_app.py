@@ -252,12 +252,19 @@ def load_session_state(uploaded_file):
 # =============================
 def page_home():
     render_header("Decision Support System (DSS) com PROMETHEE V C-ÓTIMO")
+    
+    # === EQUIPE (Nomes um abaixo do outro, em caixa elegante) ===
     st.markdown("### Equipe")
-    cols = st.columns(2)
-    with cols[0]:
-        st.markdown("**Prof. Drª. Luciana Hazin Alencar**")
-    with cols[1]:
-        st.markdown("**Gabriel Mendes de Souza**")
+    st.markdown(
+        """
+        <div style="text-align: center; padding: 15px; background-color: #f8f9fa; border-radius: 10px; margin: 20px 0;">
+            <p style="font-size: 19px; font-weight: bold; margin: 8px 0; color: #003087;">Prof. Drª. Luciana Hazin Alencar</p>
+            <p style="font-size: 17px; font-weight: bold; margin: 8px 0; color: #000;">Gabriel Mendes de Souza</p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+    
     st.markdown("---")
     st.markdown("### **Instituições Parceiras**")
     logo_cols = st.columns(3)
@@ -274,7 +281,7 @@ def page_home():
                 st.image(logo["fallback"], width=150, caption=logo["label"])
     st.markdown("---")
     
-    # ← TEXTO CORRIGIDO COM BULLETS PERFEITOS
+    # === SOBRE O SISTEMA (com bullets perfeitos) ===
     st.markdown("""
 **Sobre o sistema**
 - Desenvolvido no Grupo de Pesquisa de Gestão e Desenvolvimento de Projetos (PMD) do Departamento de Engenharia de Produção da Universidade Federal de Pernambuco (UFPE).
