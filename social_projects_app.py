@@ -33,11 +33,12 @@ def build_consequence_matrix(projects: List[str], criteria: List[str], seed: int
     df = pd.DataFrame(data=np.maximum(0, data), index=projects, columns=criteria).round(2)
     return df
 
-def compute_preference_flows(matrix: np.ndarray, criteria: List[str], optimization: Dict, weights: List[float], preference_functions: Dict, thresholds: Dict) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+def compute_preference_flows(matrix: np.ndarray, criteria: List[str], optimization: Dict,
+                            weights: List[float], preference_functions: Dict, thresholds: Dict) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     n_projects, _ = matrix.shape
     phi_plus = np.zeros(n_projects)
     phi_minus = np.zeros(n_projects)
-   
+
     for i in range(n_projects):
         for j in range(n_projects):
             if i == j:
@@ -67,7 +68,9 @@ def compute_preference_flows(matrix: np.ndarray, criteria: List[str], optimizati
     phi_star = phi_net + T
     return phi_plus, phi_minus, phi_net, phi_star
 
-def promethee_v_c_otimo(matrix: np.ndarray, projects: List[str], criteria: List[str], optimization: Dict, weights: List[float], preference_functions: Dict, thresholds: Dict, budget_constraint: float, cost_criterion_idx: int):
+def promethee_v_c_otimo(matrix: np.ndarray, projects: List[str], criteria: List[str],
+                       optimization: Dict, weights: List[float], preference_functions: Dict,
+                       thresholds: Dict, budget_constraint: float, cost_criterion_idx: int):
     phi_plus, phi_minus, phi_net, phi_star = compute_preference_flows(
         matrix, criteria, optimization, weights, preference_functions, thresholds
     )
@@ -83,17 +86,15 @@ def promethee_v_c_otimo(matrix: np.ndarray, projects: List[str], criteria: List[
             total_cost += c
     return (
         portfolio,
-        {
-            'plus': dict(zip(projects, phi_plus)),
-            'minus': dict(zip(projects, phi_minus)),
-            'net': dict(zip(projects, phi_net)),
-            'star': dict(zip(projects, phi_star))
-        },
+        {'plus': dict(zip(projects, phi_plus)),
+         'minus': dict(zip(projects, phi_minus)),
+         'net': dict(zip(projects, phi_net)),
+         'star': dict(zip(projects, phi_star))},
         total_cost
     )
 
 # =============================
-# CATÁLOGO DE CRITÉRIOS
+# CATÁLOGO DE CRITÉRIOS (corrigido)
 # =============================
 predefined_criteria = {
     "Eficiência (custo-efetividade)": {
@@ -137,7 +138,11 @@ predefined_criteria = {
     },
     "Escalabilidade": {"type": "Quantitativo (max)", "definition": "Potencial de expandir o projeto para atingir mais pessoas ou áreas.", "metric": "Unidade"},
     "Custo-benefício": {"type": "Quantitativo (min)", "definition": "Relação entre os custos do projeto e os benefícios sociais gerados.", "metric": "Razão monetária"},
-    "Sustentabilidade social": {"type": "Quantitativo (max)", "definition": "Capacidade do projeto de ter continuidade e manter seus benefícios sociais após o término", coastline: "Porcentagem"},
+    "Sustentabilidade social": {
+        "type": "Quantitativo (max)",
+        "definition": "Capacidade do projeto de ter continuidade e manter seus benefícios sociais após o término",
+        "metric": "Porcentagem"
+    },
     "Equidade social": {
         "type": "Quantitativo/qualitativo(max)",
         "definition": "Extensão em que o projeto garante acesso justo e igualitário aos seus benefícios, especialmente a grupos vulneráveis.",
@@ -177,7 +182,7 @@ predefined_criteria = {
 }
 
 # =============================
-# FUNÇÃO: LOGO + TÍTULO (CORRIGIDA)
+# FUNÇÃO: LOGO + TÍTULO
 # =============================
 def render_header(subtitle: str):
     col_logo, col_title = st.columns([1, 4])
@@ -357,7 +362,13 @@ def page_promethee_v():
     default_opt = optimize_criteria_default(selected)
     for c in selected:
         if c not in st.session_state.crit_states:
-            st.session_state.crit_states[c] = {"direction": default_opt.get(c, "Maximize"), "func": 'u', "q": 0.0, "p": 1.0, "weight": round(1.0/len(selected), 4)}
+            st.session_state.crit_states[c] = {
+                "direction": default_opt.get(c, "Maximize"),
+                "func": 'u',
+                "q": 0.0,
+                "p": 1.0,
+                "weight": round(1.0/len(selected), 4)
+            }
     for c in list(st.session_state.crit_states.keys()):
         if c not in selected:
             st.session_state.crit_states.pop(c)
@@ -494,7 +505,7 @@ def page_promethee_v():
         ax.set_ylabel('Fluxos')
         ax.set_title('Fluxos PROMETHEE V C-ÓTIMO')
         ax.set_xticks(x)
-        ax.set_xticklabels(projects, rotation=45)
+        ax.set_xticklabels(projects(projects, rotation=45)
         ax.legend()
         ax.grid(True, alpha=0.3)
         st.pyplot(fig)
@@ -517,7 +528,7 @@ def page_promethee_v():
 # ROTEAMENTO
 # =============================
 menu = ["Home", "PROMETHEE V-C-ÓTIMO"]
-choice = st.sidebar.selectbox("Menu", sidebar=True, options=menu)
+choice = st.sidebar.selectbox("Menu", menu)
 
 if choice == "Home":
     page_home()
