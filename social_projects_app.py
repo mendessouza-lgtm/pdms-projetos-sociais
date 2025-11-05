@@ -273,13 +273,15 @@ def page_home():
             else:
                 st.image(logo["fallback"], width=150, caption=logo["label"])
     st.markdown("---")
-    st.markdown(
-        "**Sobre o sistema** \n"
-        "• Desenvolvido no Grupo de Pesquisa de Gestão e Desenvolvimento de Projetos (PMD) do Departamento de Engenharia de Produção da Universidade Federal de Pernambuco (UFPE). \n"
-        "• Integra critérios **Sociais e Econômicos**. \n"
-        "• Permite configurar **funções de preferência**, **limiares (q, p)**, **direção (Max/Min)** e **pesos** por critério. \n"
-        "• **Salvar/Carregar sessão** com um clique."
-    )
+    
+    # ← TEXTO CORRIGIDO COM BULLETS PERFEITOS
+    st.markdown("""
+**Sobre o sistema**
+- Desenvolvido no Grupo de Pesquisa de Gestão e Desenvolvimento de Projetos (PMD) do Departamento de Engenharia de Produção da Universidade Federal de Pernambuco (UFPE).
+- Integra critérios **Sociais e Econômicos**.
+- Permite configurar **funções de preferência**, **limiares (q, p)**, **direção (Max/Min)** e **pesos** por critério.
+- **Salvar/Carregar sessão** com um clique.
+    """)
 
 def page_promethee_v():
     render_header("PROMETHEE V C-ÓTIMO — Avaliação Multicritério")
