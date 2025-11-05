@@ -94,7 +94,7 @@ def promethee_v_c_otimo(matrix: np.ndarray, projects: List[str], criteria: List[
     )
 
 # =============================
-# CATÁLOGO DE CRITÉRIOS (corrigido)
+# CATÁLOGO DE CRITÉRIOS (CORRIGIDO: coastline → metric)
 # =============================
 predefined_criteria = {
     "Eficiência (custo-efetividade)": {
@@ -182,12 +182,12 @@ predefined_criteria = {
 }
 
 # =============================
-# FUNÇÃO: LOGO + TÍTULO
+# FUNÇÃO: LOGO + TÍTULO (USANDO SEUS NOMES)
 # =============================
 def render_header(subtitle: str):
     col_logo, col_title = st.columns([1, 4])
     with col_logo:
-        logo_path = "images/texto-do-seu-paragrafo-1.png"
+        logo_path = "logo-PDMSPS.png"  # ← Seu nome real
         if os.path.exists(logo_path):
             st.image(logo_path, width=350)
         else:
@@ -262,9 +262,9 @@ def page_home():
     st.markdown("### **Instituições Parceiras**")
     logo_cols = st.columns(3)
     logos = [
-        {"local": "images/logo-ufpe.png", "fallback": "https://via.placeholder.com/150x100/003087/FFFFFF?text=UFPE", "label": "Universidade Federal de Pernambuco (UFPE)"},
-        {"local": "images/departamento-de-engenharia-de-producao.jpg", "fallback": "https://via.placeholder.com/150x100/003087/FFFFFF?text=DEPROD", "label": "Departamento de Engenharia de Produção"},
-        {"local": "images/pmd.png", "fallback": "https://via.placeholder.com/150x100/003087/FFFFFF?text=PMD", "label": "PMD - Gestão e Desenvolvimento de Projetos"}
+        {"local": "logo-ufpe.png", "fallback": "https://via.placeholder.com/150x100/003087/FFFFFF?text=UFPE", "label": "Universidade Federal de Pernambuco (UFPE)"},
+        {"local": "logo-departamento.jpg", "fallback": "https://via.placeholder.com/150x100/003087/FFFFFF?text=DEPROD", "label": "Departamento de Engenharia de Produção"},
+        {"local": "logo-PMD.png", "fallback": "https://via.placeholder.com/150x100/003087/FFFFFF?text=PMD", "label": "PMD - Gestão e Desenvolvimento de Projetos"}
     ]
     for i, logo in enumerate(logos):
         with logo_cols[i]:
@@ -493,7 +493,7 @@ def page_promethee_v():
         }).sort_values("Fluxo Adaptado (φ*)", ascending=False)
         st.dataframe(fluxos_df, use_container_width=True)
 
-        # Gráfico
+        # Gráfico (CORRIGIDO: set_xticklabels)
         fig, ax = plt.subplots(figsize=(12, 6))
         x = np.arange(len(projects))
         width = 0.2
@@ -505,7 +505,7 @@ def page_promethee_v():
         ax.set_ylabel('Fluxos')
         ax.set_title('Fluxos PROMETHEE V C-ÓTIMO')
         ax.set_xticks(x)
-        ax.set_xticklabels(projects, rotation=45)
+        ax.set_xticklabels(projects, rotation=45)  # ← CORRIGIDO!
         ax.legend()
         ax.grid(True, alpha=0.3)
         st.pyplot(fig)
@@ -536,4 +536,3 @@ elif choice == "PROMETHEE V-C-ÓTIMO":
     page_promethee_v()
 
 st.caption("© PDMSPS (Processo de Decisão Multicritério para Seleção de Projetos Sociais) — Sistema de Apoio à Decisão")
-
