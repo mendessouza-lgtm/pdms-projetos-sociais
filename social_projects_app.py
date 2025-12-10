@@ -141,27 +141,18 @@ def sensitivity_analysis_weights(
     # Calcular a soma dos pesos originais dos outros critérios
     original_remaining_sum = sum(w for i, w in enumerate(original_weights) if i != original_idx)
     
-    # Evitar divisão por zero se todos os outros pesos originais forem zero
-    if len(criteria) > 1 and original_remaining_sum == 0.0:
-        # Se os outros pesos originais somam 0, atribuir um peso mínimo (e.g., 1.0) para a divisão
-        # para que o restante seja distribuído uniformemente.
-        original_remaining_sum = len(criteria) - 1
-        original_weights_norm = [1.0] * len(criteria)
-        
-        if original_weights[original_idx] == 1.0:
-            # Caso o peso do critério variado seja 1, o código deve ser robusto
-            original_weights_norm[original_idx] = 0.0 
+    # Normalização segura dos pesos originais para distribuição proporcional
+    if original_remaining_sum == 0.0:
+        if len(criteria) > 1:
+            # Se a soma dos demais é zero, assume distribuição uniforme para o peso restante
+            original_weights_norm = [1.0] * len(criteria)
+            if original_weights[original_idx] == 1.0:
+                 original_weights_norm[original_idx] = 0.0
+            original_remaining_sum = sum(original_weights_norm)
         else:
-             original_weights_norm = [1.0 if i != original_idx else 0.0 for i in range(len(criteria))]
-
-    elif original_remaining_sum > 0:
-        original_weights_norm = original_weights
-    else:
-        # Caso haja apenas 1 critério, ele absorve todo o peso (1.0)
-        if len(criteria) == 1:
             original_weights_norm = original_weights
-        else:
-            return pd.DataFrame() # Sem resultados se não houver critérios
+    else:
+        original_weights_norm = original_weights
     
     for w_i in weight_range:
         # A soma dos pesos restantes deve ser 1 - w_i
@@ -173,7 +164,7 @@ def sensitivity_analysis_weights(
         # Distribuir o peso restante (1 - w_i) proporcionalmente aos outros critérios
         for i, w_orig in enumerate(original_weights_norm):
             if i != original_idx:
-                if original_remaining_sum > 0:
+                if original_remaining_sum > 1e-6: # Evita divisão por zero
                     # Distribuição proporcional: (peso original / soma dos demais originais) * (1 - w_i)
                     new_weights[i] = (w_orig / original_remaining_sum) * remaining_sum
                 elif len(criteria) > 1:
@@ -181,7 +172,6 @@ def sensitivity_analysis_weights(
                     new_weights[i] = remaining_sum / (len(criteria) - 1)
         
         # Recalcular os fluxos e o portfólio com os novos pesos
-        # Não precisa normalizar novamente dentro do promethee_v_c_otimo, pois ele já faz
         
         if sum(new_weights) > 1e-6: # Evita pesos muito próximos de zero
             portfolio, scores, total_cost = promethee_v_c_otimo(
@@ -488,13 +478,32 @@ def page_promethee_v():
     # === CRITÉRIOS ===
     st.subheader("1) Critérios e Configuração por Critério")
     all_criteria = list(predefined_criteria.keys())
+    
+    # --- CORREÇÃO APLICADA AQUI ---
+    
+    # 1. Filtra os critérios da sessão para incluir apenas aqueles que estão no catálogo
+    if st.session_state.selected_criteria:
+        st.session_state.selected_criteria = [
+            c for c in st.session_state.selected_criteria if c in all_criteria
+        ]
+
+    # 2. Define o padrão de forma segura
+    default_criteria = st.session_state.selected_criteria if st.session_state.selected_criteria else [
+        "Eficiência (custo-efetividade)", "Eficácia", "Importância do problema social"
+    ]
+    
     selected = st.multiselect(
         "Escolha critérios do catálogo:", options=all_criteria,
-        default=st.session_state.selected_criteria if st.session_state.selected_criteria else ["Eficiência (custo-efetividade)", "Eficácia", "Importância do problema social"],
+        default=default_criteria, # Usando a lista de critérios válidos ou o padrão.
         key="criteria_multiselect"
     )
+    
+    # --- FIM DA CORREÇÃO ---
+    
     custom_text = st.text_input("Adicionar critérios personalizados (separe por vírgula)", key="custom_crit_input")
     if custom_text.strip():
+        # ATENÇÃO: Os customizados não estão no `all_criteria` (catálogo). 
+        # Eles são adicionados aqui e salvos na `selected_criteria` para persistência.
         selected += [c.strip() for c in custom_text.split(',') if c.strip()]
     
     # Atualiza a lista de critérios selecionados na sessão
@@ -849,4 +858,3 @@ elif choice == "Análise de Sensibilidade":
     page_sensitivity()
 
 st.sidebar.caption("© PDMSPS — Sistema de Apoio à Decisão")
-
